@@ -1,158 +1,79 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaPlaneDeparture, FaBars } from "react-icons/fa";
-import { CgProfile } from "react-icons/cg";
-import { useAuth } from "../context/Authcontext";
+"use client"
+import { Link, useNavigate, useLocation } from "react-router-dom"
+import { Plane, User } from "lucide-react"
+import { useAuth } from "../context/Authcontext"
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const { user } = useAuth();
+
+  // Hide navbar on dashboard pages
+  const hideNavbar = location.pathname.startsWith("/Dashboard");
+  if (hideNavbar) return null;
 
   return (
-    <div className="w-full">
-      {/* Top Navbar */}
-      <div className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-[#001f3f] to-[#00334d] text-white shadow-lg">
+    <nav className="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 bg-gray-800 shadow-lg rounded-full w-[1100px] h-17 px-8 py-3">
+      <div className="flex justify-between items-center gap-10">
+        
+        {/* Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2 text-2xl font-bold hover:scale-105 transition-transform"
+          className="flex items-center gap-2 text-white text-3xl font-bold transition-colors hover:text-green-400"
         >
-          <FaPlaneDeparture className="text-green-400 text-3xl" />
-          <span className="tracking-wide">Trekker</span>
+          <Plane className="w-8 h-8 text-green-500" />
+          TravelMate
         </Link>
 
-        {/* Desktop Auth Buttons */}
+        {/* Main Navigation Links */}
+        <div className="hidden md:flex items-center gap-4 text-lg font-semibold">
+          {[
+            { to: "/experience", label: "Experience" },
+            { to: "/destinations", label: "Destinations" },
+            { to: "/offers", label: "Offers" },
+            { to: "/find-travel-mate", label: "Find Travel Mate" },
+          ].map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className="text-gray-300 hover:text-white transition-colors relative group px-4 py-2 rounded-full"
+            >
+              <span className="absolute inset-0 bg-white/10 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              <span className="relative z-10">{label}</span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Auth Buttons / User Actions */}
         {!user ? (
           <div className="hidden md:flex items-center gap-4 text-sm">
             <button
               onClick={() => navigate("/signin")}
-              className="border border-white px-5 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300"
+              className="px-5 py-2 rounded-full border-2 text-base border-white text-white hover:bg-white hover:text-gray-800 transition-all duration-300 font-medium"
             >
               Sign In
             </button>
             <button
               onClick={() => navigate("/signup")}
-              className="bg-green-500 px-5 py-2 rounded-full text-white font-semibold hover:bg-green-400 hover:scale-105 transition-all duration-300"
+              className="px-5 py-2 rounded-full bg-green-600 text-base text-white font-semibold hover:bg-green-500 transition-colors duration-300"
             >
               Sign Up
             </button>
           </div>
         ) : (
-          <div className="hidden md:flex items-center gap-4 text-sm">
-            <button
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
-              className="border border-white px-5 py-2 rounded-full hover:bg-white hover:text-black transition-all duration-300"
-            >
-              Logout
-            </button>
+          <div className="flex pr-3 items-center gap-4 text-base">
             <button
               onClick={() => navigate("/Dashboard")}
-              className="text-3xl p-2 rounded-full text-white hover:scale-110 transition-transform"
-              title="Profile"
+              className="p-2 rounded-full border-2 border-white text-white hover:shadow-[0_0_10px_2px_white] transition-shadow duration-100 flex items-center justify-center"
+              aria-label="Go to Profile"
             >
-              <CgProfile />
+              <User className="w-6 h-6" />
             </button>
           </div>
         )}
-
-        {/* Mobile Menu Toggle */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-white text-2xl"
-        >
-          <FaBars />
-        </button>
       </div>
+    </nav>
+  )
+}
 
-      {/* Desktop Navigation Links */}
-      <div className="hidden md:flex justify-center gap-16 px-8 py-3 bg-[#004d40]/90 text-white shadow-md backdrop-blur-md">
-        <NavLinks />
-      </div>
-
-      {/* Mobile Dropdown Menu */}
-      {isOpen && (
-        <div className="flex flex-col md:hidden bg-[#004d40] text-white px-6 py-4 gap-4 shadow-md">
-          <NavLinks />
-          {!user ? (
-            <>
-              <button
-                onClick={() => {
-                  navigate("/signin");
-                  setIsOpen(false);
-                }}
-                className="border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/signup");
-                  setIsOpen(false);
-                }}
-                className="bg-green-500 px-4 py-2 rounded text-white font-semibold hover:bg-green-400"
-              >
-                Sign Up
-              </button>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={() => {
-                  logout();
-                  navigate("/");
-                  setIsOpen(false);
-                }}
-                className="border border-white px-4 py-2 rounded hover:bg-white hover:text-black transition"
-              >
-                Logout
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/Dashboard");
-                  setIsOpen(false);
-                }}
-                className="text-xl text-white"
-              >
-                <CgProfile />
-              </button>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
-
-const NavLinks = () => (
-  <>
-    <Link
-      to="/"
-      className="text-base font-semibold tracking-wide hover:text-green-300 hover:underline underline-offset-4 transition-all duration-200"
-    >
-      Explore
-    </Link>
-    <Link
-      to="/destinations"
-      className="text-base font-semibold tracking-wide hover:text-green-300 hover:underline underline-offset-4 transition-all duration-200"
-    >
-      Destinations
-    </Link>
-    <Link
-      to="/offers"
-      className="text-base font-semibold tracking-wide hover:text-green-300 hover:underline underline-offset-4 transition-all duration-200"
-    >
-      Offers
-    </Link>
-    <Link
-      to="/find-travel-mate"
-      className="text-base font-semibold tracking-wide hover:text-green-300 hover:underline underline-offset-4 transition-all duration-200"
-    >
-      Find Travel Mate
-    </Link>
-  </>
-);
-
-export default Navbar;
+export default Navbar

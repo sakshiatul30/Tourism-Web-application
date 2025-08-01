@@ -1,15 +1,13 @@
 import client from "../index.js";
 
-export const createRoom = async (name, destination, travelDate, timeSlot ,userId) => {
+export const createPlan = async ( destination, travelDate, timeSlot ,userId) => {
   return await client.travelPlan.create({
     data: {
-      roomName: name,
       destination,
       travelDate,
       timeSlot,
-      user: {
-        connect: { id: userId }, // Automatically connect the admin as a member
-      },
+      createdById : userId,
+      roomName : destination
     },
   });
 };
@@ -103,9 +101,9 @@ export const removeUserFromRoom = async (roomId, userId) => {
   });
 };
 
-export const getRoomUsers = async (roomId) => {
+export const getPlan = async ( planId ) => {
   return await client.travelPlan.findUnique({
-    where: { id: roomId },
+    where: { id: planId },
     include: {
       members: true, // Get all users in the room
       user: true, // Get the admin details
@@ -187,4 +185,25 @@ export const filterByTimeDateDestination = async(timeSlot, travelDate,destinatio
       destination
     }
   })
+}
+
+
+export const addMemberTotravelPlan = async ( planId , user) => {
+  return await client.travelPlanMembers.create({
+      data : {
+        memberId : user,
+        travelPlanId : planId
+      }
+  })
+}
+
+
+export const getMemebers = async (planId) => {
+
+    return await client.travelPlanMembers.findMany({
+      where : {
+        travelPlanId : planId
+      },
+
+    })
 }

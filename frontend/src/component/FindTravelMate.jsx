@@ -79,38 +79,34 @@ main
   }, [user]);
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center text-white"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80')",
-      }}
-    >
-      <div className="bg-black/60 w-full h-full px-6 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            Find Your Perfect{" "}
-            <span className="text-green-300">Travel Buddy</span>
-          </h1>
-          <p className="mt-4 text-lg max-w-xl mx-auto text-gray-300">
-            Filter and connect with fellow travelers that match your style and interests.
-          </p>
-          <div className="mt-6 flex flex-col md:flex-row justify-center gap-4 items-center">
-            <input
-              type="text"
-              placeholder="Enter destination..."
-              className="px-5 py-3 w-full max-w-md rounded-full bg-white/20 text-white placeholder-gray-200 focus:outline-none focus:ring-2 ring-green-400"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-            />
-            <button
-              className="px-6 py-3 rounded-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold hover:scale-105 transition-transform duration-300 shadow-lg"
-              onClick={handleApplyFilters}
-            >
-              <FaSearch className="inline mr-2" /> Find
-            </button>
-          </div>
+    <div className="min-h-screen pt-32 px-6 py-12 bg-gradient-to-br from-[#000814] via-[#003049] to-[#001d3d] text-white font-sans">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
+          Discover Your Next{" "}
+          <span className="bg-gradient-to-r from-green-400 to-blue-500 text-transparent bg-clip-text">
+            Adventure Partner
+          </span>
+        </h1>
+        <p className="mt-4 text-lg max-w-xl mx-auto">
+          Connect with like-minded travelers, share incredible experiences, and
+          create memories that last a lifetime.
+        </p>
+        <div className="mt-6 flex flex-col md:flex-row justify-center gap-4 items-center">
+          <input
+            type="text"
+            placeholder="Where do you want to go? (e.g., Tokyo, Bali...)"
+            className="px-5 py-3 w-full max-w-md text-white rounded-full bg-black/30 shadow focus:outline-none focus:ring-4 ring-green-400 placeholder:text-gray-300"
+            value={destination}
+            onChange={(e) => setDestination(e.target.value)}
+          />
+          <button
+            className="px-6 py-3 rounded-full bg-gradient-to-r from-green-500 to-blue-500 text-white font-semibold hover:scale-105 transition-transform duration-300 shadow-lg"
+            onClick={handleApplyFilters}
+          >
+            <FaSearch className="inline mr-2" /> Find Matches
+          </button>
         </div>
+      </div>
 
         <div className="max-w-6xl mx-auto bg-black/50 p-6 rounded-2xl shadow-lg">
           <div className="grid md:grid-cols-4 gap-4 mb-6">

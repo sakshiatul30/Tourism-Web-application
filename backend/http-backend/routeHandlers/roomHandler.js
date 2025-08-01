@@ -1,14 +1,8 @@
 import { CreateRoomSchema } from "../utils/zodValidation.js";
-import { getRoomByName,
-   createRoom, 
-   getRoomUsers,
-    getRoomByRoomId,  
-    deleteRoom,
-    removeUserFromRoom
-   } from "../../../db/prisma/services/roomService.js";
-import { connectUserWithRoom } from "../../../db/prisma/services/userService.js";
+import * as Planservices from "../../prisma/services/roomService.js";
 
-export const CreateRoom = async (req, res) => {
+
+export const createPlan = async (req, res) => {
   try {
     // Validate request body
     const parsedData = CreateRoomSchema.safeParse(req.body);
@@ -19,81 +13,72 @@ export const CreateRoom = async (req, res) => {
       });
       return;
     }
-    const { roomName, destination, travelDate, timeSlot } = parsedData.data;
+    
+    const {destination, travelDate, timeSlot } = parsedData.data;
 
     const userId = req.id;
 
-    // Check if room already exists
-    const existingRoom = await getRoomByName(roomName);
-    if (existingRoom) {
-      res.status(402).json({
-        error: "Please give a different name, this one already exists",
-      });
-      return;
-    }
-
     // Create the room
-    const room = await createRoom(roomName, destination, travelDate, timeSlot ,userId);
-    if (!room) {
+    const user = await Planservices.createPlan(destination, travelDate, timeSlot ,userId);
+    if (!user) {
       res.status(500).json({
-        error: "Failed to create the plan. Please try again later.",
+        error: "Failed to create the plan. Please try again .",
       });
       return;
     }
 
     res.status(200).json({
       message: "Plan Created Successfully",
-      roomId: room.id,
-      name: room.roomName,
+      user : user
     });
     return;
   }
    catch (error) {
-    console.error("Error creating room:", error);
+    console.error("Error creating plan:", error);
     res.status(500).json({
-      error: "Something went wrong while creating the room.",
+      error: "Something went wrong while creating the plan.",
     });
     return;
   }
 };
 
-// Joining a room
-export const joinRoom = async (req, res) => {
-  const userId = req.id;
-  const { roomId } = req.body;
+// Joining a Plan
 
-  if (!roomId) {
+export const joinPlan = async (req, res) => {
+
+  const planId = req.params.planId;
+  console.log(planId)
+
+  if ( !planId ) {
     res.status(403).json({
-      message: "Room ID is required.",
+      message: "SomingThing went wrong",
     });
     return;
   }
 
   try {
-    const room = await getRoomUsers(roomId);
+    const plan = await Planservices.getPlan( planId );
+     
 
-    if (!room) {
+    if ( !plan ) {
       res.status(404).json({
         success: false,
-        error: "Room doesn't exist",
+        error: "Plan doesn't exist",
       });
-      return;
     }
-
-    // Check if the user is already a member
-    const isAlreadyMember = room.members.some((user) => user.id === userId);
-
-    if (!isAlreadyMember) {
-      await connectUserWithRoom(roomId, userId);
-    }
+   console.log(plan);
+  const user = req.id;
+    
+  const addMember = await Planservices.addMemberTotravelPlan(planId , user);  
 
     res.json({
       message: "Room joined successfully.",
-      roomId,
+      member: addMember,
     });
     return;
   } 
   catch (error) {
+    console.log(error);
     res.status(500).json({
       error: "Failed to join the room.",
     });
@@ -114,7 +99,7 @@ export const VerifyUserInRoom = async (req, res) => {
   }
 
   try {
-    const room = await getRoomByRoomId(roomId);
+    const room = await Planservices.getRoomByRoomId(roomId);
 
     if (!room) {
       res.status(404).json({ message: "Room not found" });
@@ -151,7 +136,7 @@ export const leaveRoom = async (req, res) => {
   }
 
   try {
-    const room = await getRoomUsers(roomId);
+    const room = await Planservices.getRoomUsers(roomId);
     if (!room) {
       res
         .status(404)
@@ -183,3 +168,25 @@ export const leaveRoom = async (req, res) => {
     return;
   }
 };
+
+export const getMemebers = async(req , res) => {
+
+    try {
+        console.log("control reach here")
+    const planId  = req.params.planId;
+    console.log(planId);
+    if( !planId ){
+          res.status(403).json({msg : "PlanId is missing"});
+    } 
+
+      const member = await Planservices.getMemebers(planId);
+
+      res.status(200).json({
+        member : member
+      })
+    
+    } catch (error) {
+      console.log(error)
+        res.status(500).json({msg : "Something went wrong !!!"});
+    }
+}

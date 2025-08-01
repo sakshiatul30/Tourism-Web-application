@@ -400,87 +400,108 @@ const Destination= () => {
 
 
 
-  const renderBudget = () => (
-  <div className="space-y-6">
-    <div className="flex items-center gap-2 mb-6">
-      <DollarSign className="h-5 w-5 text-blue-750" />
-      <h2 className="text-2xl font-bold text-to-[#1a5c58]">Budget Planning</h2>
-    </div>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="space-y-6">
-        <div>
-          <label className="block text-lg font-semibold text-from-[#488b92] mb-4">Total Budget</label>
-          <input
-            type="number"
-            value={budget.total}
-            onChange={(e) => handleBudgetChange('total', e.target.value)}
-            placeholder="Enter total budget"
-            className="w-full px-3 py-2 rounded-lg bg-gradient-to-r from-[#489b95] to-[#1a5c58] text-white placeholder-gray-300 focus:ring-2 focus:ring-[#6dd3b4] border-none"
-          />
-        </div>
-        <div className="space-y-4">
-          {['flights', 'accommodation', 'food'].map(type => (
-            <div key={type} className="space-y-1">
-              <label className="block text-sm font-medium text-to-[#1a5c58] capitalize">{type}</label>
-              <input
-                type="number"
-                value={budget[type]}
-                onChange={(e) => handleBudgetChange(type, e.target.value)}
-                placeholder={`${type} budget`}
-                className="w-full px-3 py-2 rounded-lg bg-gradient-to-r from-[#0e2f2d] to-[#1a5c58] text-white placeholder-gray-300 focus:ring-2 focus:ring-[#6dd3b4] border-none"
-              />
-            </div>
-          ))}
-        </div>
+  const formatToK = (value) => {
+  const num = Number(value);
+  if (isNaN(num)) return '0';
+  return num >= 1000 ? `${(num / 1000).toFixed(1)}k` : num.toString();
+};
+
+const renderBudget = () => {
+  const allocated = Object.entries(budget).reduce(
+    (sum, [key, value]) => key !== 'total' ? sum + (Number(value) || 0) : sum,
+    0
+  );
+  const total = Number(budget.total) || 0;
+  const remaining = total - allocated;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 mb-6">
+        <DollarSign className="h-5 w-5 text-blue-750" />
+        <h2 className="text-2xl font-bold text-to-[#1a5c58]">Budget Planning</h2>
       </div>
-      <div className="space-y-6">
-        <div className="space-y-4">
-          {['activities', 'shopping', 'other'].map(type => (
-            <div key={type} className="space-y-1">
-              <label className="block text-sm font-medium text-white capitalize">{type}</label>
-              <input
-                type="number"
-                value={budget[type]}
-                onChange={(e) => handleBudgetChange(type, e.target.value)}
-                placeholder={`${type} budget`}
-                className="w-full px-3 py-2 rounded-lg bg-gradient-to-r from-[#0e2f2d] to-[#1a5c58] text-white placeholder-gray-300 focus:ring-2 focus:ring-[#6dd3b4] border-none"
-              />
-            </div>
-          ))}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Left Column */}
+        <div className="space-y-6">
+          <div>
+            <label className="block text-lg font-semibold text-from-[#488b92] mb-4">Total Budget</label>
+            <input
+              type="number"
+              value={budget.total}
+              onChange={(e) => handleBudgetChange('total', e.target.value)}
+              placeholder="Enter total budget"
+              className="w-full px-3 py-2 rounded-lg bg-gradient-to-r from-[#489b95] to-[#1a5c58] text-white placeholder-gray-300 focus:ring-2 focus:ring-[#6dd3b4] border-none"
+            />
+          </div>
+
+          <div className="space-y-4">
+            {['flights', 'accommodation', 'food'].map(type => (
+              <div key={type} className="space-y-1">
+                <label className="block text-sm font-medium text-to-[#1a5c58] capitalize">{type}</label>
+                <input
+                  type="number"
+                  value={budget[type]}
+                  onChange={(e) => handleBudgetChange(type, e.target.value)}
+                  placeholder={`${type} budget`}
+                  className="w-full px-3 py-2 rounded-lg bg-gradient-to-r from-[#0e2f2d] to-[#1a5c58] text-white placeholder-gray-300 focus:ring-2 focus:ring-[#6dd3b4] border-none"
+                />
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="bg-gradient-to-r from-[#1a5c58] to-[#0e2f2d] p-4 rounded-lg text-white">
-          <h4 className="font-semibold mb-2">Budget Summary</h4>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between">
-              <span>Total Budget:</span>
-              <span>₹{budget.total || '0'}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Allocated:</span>
-              <span>
-                ₹{Object.entries(budget).reduce((sum, [key, value]) => key !== 'total' ? sum + (Number(value) || 0) : sum, 0)}
-              </span>
-            </div>
-            <div className="flex justify-between font-semibold border-t pt-1">
-              <span>Remaining:</span>
-              <span>
-                ₹{(Number(budget.total) || 0) - Object.entries(budget).reduce((sum, [key, value]) => key !== 'total' ? sum + (Number(value) || 0) : sum, 0)}
-              </span>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          <div className="space-y-4">
+            {['activities', 'shopping', 'other'].map(type => (
+              <div key={type} className="space-y-1">
+                <label className="block text-sm font-medium text-white capitalize">{type}</label>
+                <input
+                  type="number"
+                  value={budget[type]}
+                  onChange={(e) => handleBudgetChange(type, e.target.value)}
+                  placeholder={`${type} budget`}
+                  className="w-full px-3 py-2 rounded-lg bg-gradient-to-r from-[#0e2f2d] to-[#1a5c58] text-white placeholder-gray-300 focus:ring-2 focus:ring-[#6dd3b4] border-none"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Budget Summary with k format */}
+          <div className="bg-gradient-to-r from-[#1a5c58] to-[#0e2f2d] p-4 rounded-lg text-white">
+            <h4 className="font-semibold mb-2">Budget Summary</h4>
+            <div className="space-y-1 text-sm">
+              <div className="flex justify-between">
+                <span>Total Budget:</span>
+                <span>₹{formatToK(total)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Allocated:</span>
+                <span>₹{formatToK(allocated)}</span>
+              </div>
+              <div className="flex justify-between font-semibold border-t pt-1">
+                <span>Remaining:</span>
+                <span>₹{formatToK(remaining)}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Next Button */}
+      <div className="flex justify-end">
+        <button
+          onClick={nextTab}
+          className="bg-gradient-to-r from-[#1a5c58] to-[#0e2f2d] text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
+        >
+          Next: Packing List →
+        </button>
+      </div>
     </div>
-    <div className="flex justify-end">
-      <button
-        onClick={nextTab}
-        className="bg-gradient-to-r from-[#1a5c58] to-[#0e2f2d] text-white px-6 py-2 rounded-lg hover:shadow-lg transition-all"
-      >
-        Next: Packing List →
-      </button>
-    </div>
-  </div>
-);
+  );
+};
+
   const renderPacking = () => (
   <div className="space-y-6">
     <div className="bg-gradient-to-r from-[#0e2f2d] to-[#1a5c58] rounded-lg p-6 text-white">

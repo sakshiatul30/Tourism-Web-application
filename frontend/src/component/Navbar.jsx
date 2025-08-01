@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaPlaneDeparture } from "react-icons/fa";
+import { FaPlaneDeparture, FaBars } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { useAuth } from "../context/Authcontext";
 
@@ -11,9 +11,8 @@ const Navbar = () => {
 
   return (
     <div className="w-full">
-     
+      {/* Top Navbar */}
       <div className="flex justify-between items-center px-8 py-4 bg-gradient-to-r from-[#001f3f] to-[#00334d] text-white shadow-lg">
-        
         <Link
           to="/"
           className="flex items-center gap-2 text-2xl font-bold hover:scale-105 transition-transform"
@@ -62,19 +61,18 @@ const Navbar = () => {
         {/* Mobile Menu Toggle */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-white text-xl focus:outline-none"
+          className="md:hidden text-white text-2xl"
         >
-          
+          <FaBars />
         </button>
       </div>
 
- main
-      {/* Navigation Links (Desktop) */}
+      {/* Desktop Navigation Links */}
       <div className="hidden md:flex justify-center gap-16 px-8 py-3 bg-[#004d40]/90 text-white shadow-md backdrop-blur-md">
         <NavLinks />
       </div>
 
-      {/* Mobile Links Dropdown */}
+      {/* Mobile Dropdown Menu */}
       {isOpen && (
         <div className="flex flex-col md:hidden bg-[#004d40] text-white px-6 py-4 gap-4 shadow-md">
           <NavLinks />
@@ -122,20 +120,11 @@ const Navbar = () => {
               </button>
             </>
           )}
-=======
-        <div className="flex justify-center gap-10 px-6 py-2 bg-[#004d40]/90 text-white text-sm font-semibold shadow-md">
-          <Link to="/" className="hover:text-green-300 transition">Experience</Link>
-          <Link to="/destinations" className="hover:text-green-300 transition">Destinations</Link>
-          <Link to="/offers" className="hover:text-green-300 transition">Offers</Link>
-          <Link to="/find-travel-mate" className="hover:text-green-300 transition">Find Travel Mate</Link>
-main
         </div>
       )}
     </div>
   );
 };
-
-
 
 const NavLinks = () => (
   <>

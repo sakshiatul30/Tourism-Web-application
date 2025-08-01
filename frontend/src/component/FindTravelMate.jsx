@@ -62,7 +62,7 @@ const FindTravelmate = () => {
           },
         });
  main
-=======
+
         toast.success("User data fetched successfully!");
         console.log("Backend response:", response.data.res);
 main
